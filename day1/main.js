@@ -1,5 +1,4 @@
 var fs = require("fs")
-var process = require("process")
 
 var nums = fs.readFileSync(__dirname + '/input.txt', 'utf8').split(/\s/);
 

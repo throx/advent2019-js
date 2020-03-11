@@ -11,19 +11,19 @@ module.exports = class CPU {
 
     getMemoryImmediate() {
         let val = this.memory[this.ip];
-        this.ip = this.ip + 1;
+        this.ip++;
         return val;
     }
 
     getMemory() {
         let addr = this.memory[this.ip];
-        this.ip = this.ip + 1;
+        this.ip++;
         return this.memory[addr];
     }
 
     setMemory(val) {
         let addr = this.memory[this.ip];
-        this.ip = this.ip + 1;
+        this.ip++;
         this.memory[addr] = val;
     }
 

@@ -5,27 +5,43 @@ module.exports = class CPU {
 
         this.dispatch = {
             1 : () => this.add(),
-            2 : () => this.sub()
+            2 : () => this.mul()
         }
     }
 
-    add() {
-        console.log("Adding");
-        this.ip = this.ip + 4;
-        console.log("  new ip " + this.ip);
+    getMemoryImmediate() {
+        let val = this.memory[this.ip];
+        this.ip = this.ip + 1;
+        return val;
     }
 
-    sub() {
-        console.log("Subbing");
-        this.ip = this.ip + 4;
+    getMemory() {
+        let addr = this.memory[this.ip];
+        this.ip = this.ip + 1;
+        return this.memory[addr];
+    }
+
+    setMemory(val) {
+        let addr = this.memory[this.ip];
+        this.ip = this.ip + 1;
+        this.memory[addr] = val;
+    }
+
+    add() {
+        let src1 = this.getMemory();
+        let src2 = this.getMemory();
+        this.setMemory(src1 + src2);
+    }
+
+    mul() {
+        let src1 = this.getMemory();
+        let src2 = this.getMemory();
+        this.setMemory(src1 * src2);
     }
 
     run() {
-        console.log("CPU Running");
-
         while (true) {
-            let opcode = this.memory[this.ip];
-            console.log("Opcode: " + opcode + " @ " + this.ip);
+            let opcode = this.getMemoryImmediate();
             if (opcode == 99) {
                 return;
             }

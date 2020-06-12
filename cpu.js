@@ -5,6 +5,7 @@ class CPU {
         this.input = "";
         this.output = "";
         this.modes = [];
+        this.rb = 0;
 
         this.dispatch = {
             1 : () => this.add(),
@@ -14,7 +15,8 @@ class CPU {
             5 : () => this.jt(),
             6 : () => this.jf(),
             7 : () => this.lt(),
-            8 : () => this.eq()
+            8 : () => this.eq(),
+            9 : () => this.srb()
         }
     }
 
@@ -27,7 +29,17 @@ class CPU {
     getMemory() {
         let addr = this.memory[this.ip];
         this.ip++;
-        return this.memory[addr];
+        let val = this.memory[addr];
+        if (val == undefined) return 0;
+        return val;
+    }
+
+    getMemoryRelative() {
+        let addr = this.memory[this.ip];
+        this.ip++;
+        let val = this.memory[addr + this.rb];
+        if (val == undefined) return 0;
+        return val;
     }
 
     get() {
@@ -36,6 +48,8 @@ class CPU {
                 return this.getMemory();
             case 1:
                 return this.getMemoryImmediate();
+            case 2:
+                return this.getMemoryRelative();
         }
         throw("Invalid mode on read");
     }
@@ -46,6 +60,12 @@ class CPU {
         this.memory[addr] = val;
     }
 
+    setMemoryRelative(val) {
+        let addr = this.memory[this.ip];
+        this.ip++;
+        this.memory[addr + this.rb] = val;
+    }
+
     set(val) {
         switch(this.modes.shift()) {
             case 0:
@@ -53,6 +73,9 @@ class CPU {
                 return;
             case 1:
                 throw("Cannot write to immediate memory");
+            case 2:
+                this.setMemoryRelative(val);
+                return;
         }
         throw("Invalid mode on write");
     }
@@ -116,6 +139,11 @@ class CPU {
             res = 1;
         }
         this.set(res);
+    }
+
+    srb() {
+        let val = this.get();
+        this.rb = this.rb + val;
     }
 
     parseModes(op) {
